@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shortcut Link</title>
+</head>
+
+<style>
+    body {
+        font-family: sans-serif;
+        text-align: center;
+    }
+    
+    h1 {
+        margin: 0;
+        padding: 0;
+        font-size: 2rem;
+        font-weight: 400;
+    }
+    
+    div {
+        margin: 1rem 0;
+    }
+    
+    input {
+        padding: 0.5rem;
+        font-size: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    
+    button {
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: #fff;
+        cursor: pointer;
+    }
+    
+    button:hover {
+        background-color: #eee;
+    }
+    
+    a {
+        color: #000;
+        text-decoration: none;
+    }
+    
+    a:hover {
+        text-decoration: underline;
+    }
+    
+    #template {
+        width: 100%;
+        display: block !important;
+    }
+    
+    #template a {
+        display: inline-block;
+        width: 80%;
+        text-align: left;
+    }
+    
+    #template button {
+        display: inline-block;
+    }
+</style>
+
+<body>
+    <div class="content">
+        <h1>Shortcut Link</h1>
+        <div>
+            <input type="text" id="url" placeholder="URL">
+            <button id="submit">Submit</button>
+        </div>
+        <div id="result"></div>
+    </div>
+    <div id="template" class="template" style="display: none;">
+        <a href="" target="_blank"></a>
+        <button id="delete">Delete</button>
+    </div>
+</body>
+
+
+<script>
+    const savedData = JSON.parse(localStorage.getItem('savedData')) || [];
+
+    function displayData() {
+        const resultDiv = document.getElementById('result');
+        resultDiv.innerHTML = '';
+        savedData.forEach(data => {
+            const template = document.getElementById('template');
+            const clone = template.cloneNode(true);
+            clone.classList.remove('template');
+
+            const a = clone.querySelector('a');
+            a.href = data.url;
+            a.textContent = data.url;
+
+            // remove the defaulttemplate in the class
+            clone.classList.remove('defaulttemplate');
+
+            const deleteBtn = clone.querySelector('#delete');
+            deleteBtn.addEventListener('click', () => {
+                const index = savedData.findIndex(d => d.url === data.url);
+                savedData.splice(index, 1);
+                localStorage.setItem('savedData', JSON.stringify(savedData));
+                displayData();
+            });
+
+            resultDiv.appendChild(clone);
+        });
+    }
+
+
+
+    const submitBtn = document.getElementById('submit');
+    submitBtn.addEventListener('click', () => {
+        const input = document.getElementById('url');
+        const url = input.value.trim();
+        if (url) {
+            savedData.push({
+                url
+            });
+            localStorage.setItem('savedData', JSON.stringify(savedData));
+            input.value = '';
+            displayData();
+        }
+    });
+
+    displayData();
+</script>
+
+</html>
